@@ -204,7 +204,8 @@
             if (!subscriberToDelete) return;
 
             try {
-                const response = await fetch(`http://localhost:3000/api/subscribers/${subscriberToDelete}`, {
+                const encodedEmail = encodeURIComponent(subscriberToDelete);
+                const response = await fetch(`http://localhost:3000/api/subscribers/${encodedEmail}`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -212,7 +213,8 @@
                 });
 
                 if (!response.ok) {
-                    throw new Error('Failed to delete subscriber');
+                    const data = await response.json();
+                    throw new Error(data.message || 'Failed to delete subscriber');
                 }
 
                 // Refresh the subscribers list
@@ -220,7 +222,7 @@
                 hideConfirmDialog();
             } catch (error) {
                 console.error('Error:', error);
-                alert('Failed to delete subscriber');
+                alert(error.message || 'Failed to delete subscriber');
             }
         }
 
