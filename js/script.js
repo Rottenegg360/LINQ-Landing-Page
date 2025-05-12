@@ -35,7 +35,7 @@ spollerButtons.forEach((button) => {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
-    const form = document.querySelector('form');
+    const form = document.getElementById('waitlist-form');
     const submitButton = form.querySelector('button[type="submit"]');
     const nameInput = form.querySelector('input[type="text"]');
     const emailInput = form.querySelector('input[type="email"]');
@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Disable submit button and show loading state
         submitButton.disabled = true;
-        submitButton.textContent = 'Subscribing...';
+        submitButton.textContent = 'Joining...';
         
         try {
             const response = await fetch('http://localhost:3000/api/subscribe', {
@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (response.ok) {
                 // Show success message
-                alert('Thank you for subscribing!');
+                alert('Thank you for joining the waitlist!');
                 form.reset();
             } else {
                 // Show error message
@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } finally {
             // Re-enable submit button
             submitButton.disabled = false;
-            submitButton.textContent = 'Subscribe';
+            submitButton.textContent = 'Join Waitlist';
         }
     });
 });
