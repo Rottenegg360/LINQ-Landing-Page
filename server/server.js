@@ -270,6 +270,23 @@ app.post('/api/admin/change-password', [
     }
 });
 
+// Delete subscriber
+app.delete('/api/subscribers/:email', authenticateToken, async (req, res) => {
+    try {
+        const { email } = req.params;
+        const result = await User.deleteOne({ email });
+        
+        if (result.deletedCount === 0) {
+            return res.status(404).json({ message: 'Subscriber not found' });
+        }
+        
+        res.json({ message: 'Subscriber deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting subscriber:', error);
+        res.status(500).json({ message: 'Error deleting subscriber' });
+    }
+});
+
 // Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
