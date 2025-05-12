@@ -15,7 +15,7 @@ const app = express();
 // Security Middleware
 app.use(helmet()); // Add security headers
 app.use(cors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:8000',
+    origin: '*', // Allow all origins in development
     credentials: true
 }));
 app.use(express.json());
