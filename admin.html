@@ -3,137 +3,229 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LINQ - Admin Dashboard</title>
+    <title>LINQ Admin Dashboard</title>
     <style>
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
             margin: 0;
             padding: 20px;
             background-color: #000;
             color: #fff;
         }
-
         .container {
             max-width: 1200px;
             margin: 0 auto;
         }
-
-        h1 {
-            text-align: center;
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 30px;
-            font-size: 2.5em;
         }
-
-        .subscribers-table {
+        .subscribers-section, .password-section {
+            background-color: #1a1a1a;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        table {
             width: 100%;
             border-collapse: collapse;
-            background-color: #111;
-            border-radius: 10px;
-            overflow: hidden;
+            margin-top: 20px;
         }
-
-        .subscribers-table th,
-        .subscribers-table td {
-            padding: 15px;
+        th, td {
+            padding: 12px;
             text-align: left;
             border-bottom: 1px solid #333;
         }
-
-        .subscribers-table th {
-            background-color: #222;
-            font-weight: 600;
+        th {
+            background-color: #2a2a2a;
         }
-
-        .subscribers-table tr:hover {
-            background-color: #1a1a1a;
+        .form-group {
+            margin-bottom: 15px;
         }
-
-        .loading {
-            text-align: center;
-            padding: 20px;
-            font-size: 1.2em;
+        label {
+            display: block;
+            margin-bottom: 5px;
         }
-
-        .error {
-            color: #ff4444;
-            text-align: center;
-            padding: 20px;
+        input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #333;
+            border-radius: 4px;
+            background-color: #2a2a2a;
+            color: #fff;
+            margin-bottom: 10px;
         }
-
-        .refresh-button {
+        button {
             background-color: #007AFF;
             color: white;
             border: none;
             padding: 10px 20px;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 1em;
-            margin-bottom: 20px;
+            font-size: 14px;
         }
-
-        .refresh-button:hover {
+        button:hover {
             background-color: #0056b3;
         }
-
-        .stats {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
+        .error {
+            color: #ff4444;
+            margin-top: 5px;
+            font-size: 14px;
         }
-
-        .stat-card {
-            background-color: #111;
-            padding: 20px;
-            border-radius: 10px;
-            flex: 1;
-            margin: 0 10px;
-            text-align: center;
+        .success {
+            color: #00C851;
+            margin-top: 5px;
+            font-size: 14px;
         }
-
-        .stat-card h3 {
-            margin: 0;
-            color: #888;
+        .logout-btn {
+            background-color: #dc3545;
         }
-
-        .stat-card p {
-            font-size: 2em;
-            margin: 10px 0 0 0;
+        .logout-btn:hover {
+            background-color: #c82333;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>LINQ Subscribers Dashboard</h1>
-        
-        <div class="stats">
-            <div class="stat-card">
-                <h3>Total Subscribers</h3>
-                <p id="total-subscribers">-</p>
-            </div>
-            <div class="stat-card">
-                <h3>New Today</h3>
-                <p id="new-today">-</p>
-            </div>
+        <div class="header">
+            <h1>LINQ Admin Dashboard</h1>
+            <button class="logout-btn" onclick="logout()">Logout</button>
         </div>
 
-        <button class="refresh-button" onclick="loadSubscribers()">Refresh Data</button>
+        <div class="password-section">
+            <h2>Change Password</h2>
+            <form id="changePasswordForm">
+                <div class="form-group">
+                    <label for="currentPassword">Current Password</label>
+                    <input type="password" id="currentPassword" required autocapitalize="off" autocomplete="current-password">
+                </div>
+                <div class="form-group">
+                    <label for="newPassword">New Password</label>
+                    <input type="password" id="newPassword" required autocapitalize="off" autocomplete="new-password">
+                    <div class="error" id="passwordError"></div>
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm New Password</label>
+                    <input type="password" id="confirmPassword" required autocapitalize="off" autocomplete="new-password">
+                </div>
+                <button type="submit">Change Password</button>
+                <div class="success" id="passwordSuccess"></div>
+            </form>
+        </div>
 
-        <div id="loading" class="loading">Loading subscribers...</div>
-        <div id="error" class="error" style="display: none;"></div>
-
-        <table class="subscribers-table">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Date Subscribed</th>
-                </tr>
-            </thead>
-            <tbody id="subscribers-list">
-            </tbody>
-        </table>
+        <div class="subscribers-section">
+            <h2>Subscribers</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Date Subscribed</th>
+                    </tr>
+                </thead>
+                <tbody id="subscribersList">
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <script src="js/admin.js"></script>
+    <script>
+        // Check if user is logged in
+        const token = localStorage.getItem('adminToken');
+        if (!token) {
+            window.location.href = 'admin-login.html';
+        }
+
+        // Fetch subscribers
+        async function fetchSubscribers() {
+            try {
+                const response = await fetch('http://localhost:3000/api/subscribers', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        window.location.href = 'admin-login.html';
+                        return;
+                    }
+                    throw new Error('Failed to fetch subscribers');
+                }
+
+                const subscribers = await response.json();
+                const tbody = document.getElementById('subscribersList');
+                tbody.innerHTML = subscribers.map(sub => `
+                    <tr>
+                        <td>${sub.name}</td>
+                        <td>${sub.email}</td>
+                        <td>${new Date(sub.createdAt).toLocaleDateString()}</td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Handle password change
+        document.getElementById('changePasswordForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const errorDiv = document.getElementById('passwordError');
+            const successDiv = document.getElementById('passwordSuccess');
+
+            // Reset messages
+            errorDiv.textContent = '';
+            successDiv.textContent = '';
+
+            // Validate password match
+            if (newPassword !== confirmPassword) {
+                errorDiv.textContent = 'New passwords do not match';
+                return;
+            }
+
+            // Validate password complexity
+            const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+            if (!passwordRegex.test(newPassword)) {
+                errorDiv.textContent = 'Password must be at least 8 characters long and contain uppercase, lowercase, number, and special character';
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:3000/api/admin/change-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ currentPassword, newPassword })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message || 'Failed to change password');
+                }
+
+                successDiv.textContent = 'Password changed successfully';
+                document.getElementById('changePasswordForm').reset();
+            } catch (error) {
+                errorDiv.textContent = error.message;
+            }
+        });
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('adminToken');
+            window.location.href = 'admin-login.html';
+        }
+
+        // Initial fetch
+        fetchSubscribers();
+    </script>
 </body>
 </html> 
