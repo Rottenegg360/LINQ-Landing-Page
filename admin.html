@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LINQ - Admin Dashboard</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #000;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        .subscribers-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #111;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .subscribers-table th,
+        .subscribers-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #333;
+        }
+
+        .subscribers-table th {
+            background-color: #222;
+            font-weight: 600;
+        }
+
+        .subscribers-table tr:hover {
+            background-color: #1a1a1a;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            font-size: 1.2em;
+        }
+
+        .error {
+            color: #ff4444;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .refresh-button {
+            background-color: #007AFF;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-bottom: 20px;
+        }
+
+        .refresh-button:hover {
+            background-color: #0056b3;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background-color: #111;
+            padding: 20px;
+            border-radius: 10px;
+            flex: 1;
+            margin: 0 10px;
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            margin: 0;
+            color: #888;
+        }
+
+        .stat-card p {
+            font-size: 2em;
+            margin: 10px 0 0 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>LINQ Subscribers Dashboard</h1>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <h3>Total Subscribers</h3>
+                <p id="total-subscribers">-</p>
+            </div>
+            <div class="stat-card">
+                <h3>New Today</h3>
+                <p id="new-today">-</p>
+            </div>
+        </div>
+
+        <button class="refresh-button" onclick="loadSubscribers()">Refresh Data</button>
+
+        <div id="loading" class="loading">Loading subscribers...</div>
+        <div id="error" class="error" style="display: none;"></div>
+
+        <table class="subscribers-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Date Subscribed</th>
+                </tr>
+            </thead>
+            <tbody id="subscribers-list">
+            </tbody>
+        </table>
+    </div>
+
+    <script src="js/admin.js"></script>
+</body>
+</html> 
