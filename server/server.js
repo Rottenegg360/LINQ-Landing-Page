@@ -270,21 +270,72 @@ app.post('/api/admin/change-password', [
     }
 });
 
+// Check if subscriber exists
+app.get('/api/subscribers/check/:email', authenticateToken, async (req, res) => {
+    try {
+        const { email } = req.params;
+        console.log('Checking subscriber with email:', email);
+        
+        const subscriber = await User.findOne({ email: decodeURIComponent(email) });
+        console.log('Found subscriber:', subscriber);
+        
+        if (!subscriber) {
+            return res.status(404).json({ message: 'Subscriber not found' });
+        }
+        
+        res.json({ exists: true, subscriber });
+    } catch (error) {
+        console.error('Error checking subscriber:', error);
+        res.status(500).json({ message: 'Error checking subscriber' });
+    }
+});
+
 // Delete subscriber
 app.delete('/api/subscribers/:email', authenticateToken, async (req, res) => {
     try {
         const { email } = req.params;
-        const result = await User.deleteOne({ email });
+        const decodedEmail = decodeURIComponent(email);
+        console.log('Delete request received for email:', decodedEmail);
         
-        if (result.deletedCount === 0) {
+        // First check if subscriber exists
+        const subscriber = await User.findOne({ email: decodedEmail });
+        console.log('Found subscriber:', subscriber);
+        
+        if (!subscriber) {
+            console.log('No subscriber found with email:', decodedEmail);
             return res.status(404).json({ message: 'Subscriber not found' });
         }
         
+        // Delete the subscriber
+        const result = await User.deleteOne({ email: decodedEmail });
+        console.log('Delete result:', result);
+        
+        if (result.deletedCount === 0) {
+            console.log('Failed to delete subscriber:', decodedEmail);
+            return res.status(500).json({ message: 'Failed to delete subscriber' });
+        }
+        
+        console.log('Successfully deleted subscriber:', decodedEmail);
         res.json({ message: 'Subscriber deleted successfully' });
     } catch (error) {
         console.error('Error deleting subscriber:', error);
-        res.status(500).json({ message: 'Error deleting subscriber' });
+        res.status(500).json({ message: 'Error deleting subscriber', error: error.message });
     }
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error('Error:', err);
+    res.status(err.status || 500).json({
+        message: err.message || 'Internal server error'
+    });
+});
+
+// 404 handler
+app.use((req, res) => {
+    res.status(404).json({
+        message: 'Not Found'
+    });
 });
 
 // Start server

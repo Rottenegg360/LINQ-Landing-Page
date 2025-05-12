@@ -204,21 +204,55 @@
             if (!subscriberToDelete) return;
 
             try {
+                console.log('Attempting to delete subscriber:', subscriberToDelete);
                 const encodedEmail = encodeURIComponent(subscriberToDelete);
-                const response = await fetch(`http://localhost:3000/api/subscribers/${encodedEmail}`, {
-                    method: 'DELETE',
+                console.log('Encoded email:', encodedEmail);
+                
+                // First check if subscriber exists
+                const checkResponse = await fetch(`http://localhost:3000/api/subscribers/check/${encodedEmail}`, {
                     headers: {
-                        'Authorization': `Bearer ${token}`
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json'
                     }
                 });
 
+                if (!checkResponse.ok) {
+                    const data = await checkResponse.json();
+                    throw new Error(data.message || 'Subscriber not found');
+                }
+
+                // If subscriber exists, proceed with deletion
+                const response = await fetch(`http://localhost:3000/api/subscribers/${encodedEmail}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                console.log('Delete response status:', response.status);
+                const contentType = response.headers.get('content-type');
+                console.log('Response content type:', contentType);
+
+                let data;
+                try {
+                    data = await response.json();
+                    console.log('Response data:', data);
+                } catch (e) {
+                    console.error('Failed to parse response as JSON:', e);
+                    throw new Error('Server returned invalid response');
+                }
+
                 if (!response.ok) {
-                    const data = await response.json();
                     throw new Error(data.message || 'Failed to delete subscriber');
                 }
 
+                // Show success message
+                alert('Subscriber deleted successfully');
+                
                 // Refresh the subscribers list
-                fetchSubscribers();
+                await fetchSubscribers();
                 hideConfirmDialog();
             } catch (error) {
                 console.error('Error:', error);
